@@ -582,6 +582,7 @@ executed directly, for example in MS-Windows.")
         (insert "\n")
         (insert "export \"LESS=-R\"\n")
         (insert "export \"MORE=-R\"\n"))
+      (view-mode)
       (goto-char (point-min)))
     (display-buffer buf)))
 
