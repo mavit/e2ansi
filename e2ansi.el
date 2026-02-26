@@ -532,6 +532,8 @@ Replace the path to the home directory with `~'."
   (interactive)
   (let ((buf (get-buffer-create "*e2ansi-bash*")))
     (with-current-buffer buf
+      (sh-mode)
+      (sh-set-shell "bash" t nil)
       (erase-buffer)
       (let ((emacs-cmd (or (car-safe command-line-args)
                            "emacs")))
