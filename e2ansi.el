@@ -581,7 +581,8 @@ executed directly, for example in MS-Windows.")
         (insert "# -R -- Emit raw bytes (needed to display ANSI sequences).\n")
         (insert "\n")
         (insert "export \"LESS=-R\"\n")
-        (insert "export \"MORE=-R\"\n")))
+        (insert "export \"MORE=-R\"\n"))
+      (goto-char (point-min)))
     (display-buffer buf)))
 
 
