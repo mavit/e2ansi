@@ -48,6 +48,9 @@
 
 (require 'e2ansi)
 
+;; Silence unsightly debugging messages.
+(advice-add 'message :around #'e2ansi-batch-message-advice)
+
 (setq e2ansi-batch-help-text "\
 Syntax highlight files using ANSI escape sequences using Emacs as
 the engine. See the file \"e2ansi.el\" for more information.

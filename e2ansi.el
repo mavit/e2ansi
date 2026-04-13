@@ -820,6 +820,22 @@ See `e2ansi-batch-options' for options."
     (princ (format "%20s: %s\n" (car pair) (cdr pair)))))
 
 
+(defun e2ansi-batch-message-advice (orig-fun format-string &rest args)
+  "Call ORIG-FUN unless FORMAT-STRING on ARGS is uninteresting.
+Intended as around advice for the `message' function, to inhibit certain
+unimportant messages."
+  (if (member format-string
+              ;; These debugging messages are output when entering `sh-mode':
+              '("Setting up indent for shell type %s"
+                "Indentation variables are now local."
+                "Indentation setup for shell type %s"))
+      ;; To be on the safe side, preserve the return value as it would be
+      ;; even if we hadn't inhibited the message.
+      (when format-string
+        (format-message format-string args))
+    (apply orig-fun format-string args)))
+
+
 ;; ----------------------------------------------------------------------
 ;; ANSI Colors
 ;;
