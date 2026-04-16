@@ -123,7 +123,7 @@ example (in bash syntax):
 
 In addition, the command `emacs` must be in the path.
 
-### More about `less`
+#### More about `less`
 
 The command line tool `less` is preinstalled on most systems. If it
 is missing or outdated on your system it's easy to download and
@@ -131,6 +131,21 @@ build a new version from http://www.greenwoodsoftware.com/less
 
 The document [LessWindows](doc/LessWindows.md) describes how to
 build `less` using `cmake`, a modern build system.
+
+#### Integration with `less` via `lesspipe.sh`
+
+There are many independent implementations of pre-processors intended to
+be used with `LESSOPEN`, to allow `less` to view file types it could not
+normally handle. They are often called `lesspipe` or `lesspipe.sh`.
+Your operating system may have already set up one of these for you.
+
+If you use the `lesspipe.sh` from https://lesspipe.org/, version 2.25 or
+newer, you can configure it to use `e2ansi-cat` as its highlighter:
+
+    eval "$(lesspipe.sh)"
+    export "LESSCOLORIZER=e2ansi-cat"
+    export "LESS=-R"
+    export "MORE=-R"
 
 ## The *e2ansi* modules
 
