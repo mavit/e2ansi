@@ -832,7 +832,7 @@ unimportant messages."
       ;; To be on the safe side, preserve the return value as it would be
       ;; even if we hadn't inhibited the message.
       (when format-string
-        (format-message format-string args))
+        (apply #'format-message format-string args))
     (apply orig-fun format-string args)))
 
 
