@@ -6,7 +6,7 @@
 ;; Keywords: faces, languages
 ;; Created: 2014-12-07
 ;; Version: 0.2.0
-;; Package-Requires: ((face-explorer "0.0.6"))
+;; Package-Requires: ((emacs "29.1") (face-explorer "0.0.6"))
 ;; URL: https://github.com/Lindydancer/e2ansi
 
 ;; This program is free software: you can redistribute it and/or modify
