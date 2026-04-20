@@ -370,6 +370,26 @@
 ;;; Code:
 
 (require 'face-explorer)
+(require 'minibuffer)
+
+
+(defgroup e2ansi nil
+  "Convert text highlighted in Emacs to text with ANSI escape codes."
+  :group 'faces
+  :package-version "0.3.0")
+
+(defcustom e2ansi-batch-inhibit-message-regexps
+  ;; These debugging messages are output when entering `sh-mode':
+  '("\\`Setting up indent for shell type "
+    "\\`Indentation variables are now local\\.\\'"
+    "\\`Indentation setup for shell type ")
+  "List of regexps of messages to silence while running the `e2ansi-cat' command.
+When function `message' is advised by `e2ansi-batch-message-advice', any
+error/warning/debugging messages that match the value of this variable
+will be discarded instead of being sent to stderr."
+  :group 'e2ansi
+  :type '(repeat regexp)
+  :package-version "0.3.0")
 
 
 (defvar e2ansi-use-window-system-color-values nil
@@ -823,17 +843,22 @@ See `e2ansi-batch-options' for options."
 (defun e2ansi-batch-message-advice (orig-fun format-string &rest args)
   "Call ORIG-FUN unless FORMAT-STRING on ARGS is uninteresting.
 Intended as around advice for the `message' function, to inhibit certain
-unimportant messages."
-  (if (member format-string
-              ;; These debugging messages are output when entering `sh-mode':
-              '("Setting up indent for shell type %s"
-                "Indentation variables are now local."
-                "Indentation setup for shell type %s"))
-      ;; To be on the safe side, preserve the return value as it would be
-      ;; even if we hadn't inhibited the message.
-      (when format-string
-        (apply #'format-message format-string args))
-    (apply orig-fun format-string args)))
+unimportant messages (as defined by
+`e2ansi-batch-inhibit-message-regexps')."
+  (let* ((formatted-message (apply #'format-message format-string args))
+         (inhibit-message-regexps e2ansi-batch-inhibit-message-regexps)
+         (set-message-function-result (inhibit-message formatted-message)))
+    ;; See documentation for variable `set-message-functions' for an
+    ;; explanation of the possible return values of function
+    ;; `inhibit-message'.
+    (cond ((not set-message-function-result)
+           (apply orig-fun format-string args))
+          ((stringp set-message-function-result)
+           (apply orig-fun set-message-function-result ()))
+          (t
+           ;; To be on the safe side, preserve the return value as it would be
+           ;; even if we hadn't inhibited the message.
+           formatted-message))))
 
 
 ;; ----------------------------------------------------------------------
