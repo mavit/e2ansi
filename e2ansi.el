@@ -6,7 +6,7 @@
 ;; Keywords: faces, languages
 ;; Created: 2014-12-07
 ;; Version: 0.2.0
-;; Package-Requires: ((emacs "29.1") (face-explorer "0.0.6"))
+;; Package-Requires: ((face-explorer "0.0.6"))
 ;; URL: https://github.com/Lindydancer/e2ansi
 
 ;; This program is free software: you can redistribute it and/or modify
@@ -845,20 +845,14 @@ See `e2ansi-batch-options' for options."
 Intended as around advice for the `message' function, to inhibit certain
 unimportant messages (as defined by
 `e2ansi-batch-inhibit-message-regexps')."
-  (let* ((formatted-message (apply #'format-message format-string args))
-         (inhibit-message-regexps e2ansi-batch-inhibit-message-regexps)
-         (set-message-function-result (inhibit-message formatted-message)))
-    ;; See documentation for variable `set-message-functions' for an
-    ;; explanation of the possible return values of function
-    ;; `inhibit-message'.
-    (cond ((not set-message-function-result)
-           (apply orig-fun format-string args))
-          ((stringp set-message-function-result)
-           (apply orig-fun set-message-function-result ()))
-          (t
-           ;; To be on the safe side, preserve the return value as it would be
-           ;; even if we hadn't inhibited the message.
-           formatted-message))))
+  (let ((formatted-message (apply #'format-message format-string args)))
+    (if (string-match-p
+         (mapconcat #'identity e2ansi-batch-inhibit-message-regexps "\\|")
+         formatted-message)
+        ;; To be on the safe side, preserve the return value as it would be
+        ;; even if we hadn't inhibited the message.
+        formatted-message
+      (apply orig-fun format-string args))))
 
 
 ;; ----------------------------------------------------------------------
