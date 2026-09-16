@@ -689,7 +689,8 @@ Return the number of colors, or t if the terminal supports full
 24-bit colors."
   (let ((term (getenv "TERM")))
     (if term
-        (cond ((string-match "-256color\\'" term) 256)
+        (cond ((string-equal "truecolor" (getenv "COLORTERM")) t)
+              ((string-match "-256color\\'" term) 256)
               ;; Full RGB support.
               ((string-match "-direct\\'" term) t)
               (t 8))

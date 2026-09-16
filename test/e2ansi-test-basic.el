@@ -236,6 +236,14 @@
     (e2ansi-with-fictitious-display-as-terminal
      (should (equal face-explorer-number-of-colors 256))
      (should (equal face-explorer-background-mode 'light))))
+  (let ((process-environment '("TERM=xterm-direct")))
+    (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-number-of-colors t))
+     (should (equal face-explorer-background-mode 'light))))
+  (let ((process-environment '("TERM=xterm-256color" "COLORTERM=truecolor")))
+    (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-number-of-colors t))
+     (should (equal face-explorer-background-mode 'light))))
   (let ((process-environment '("COLORFGBG=0;7")))
     (e2ansi-with-fictitious-display-as-terminal
      (should (equal face-explorer-number-of-colors 8))
