@@ -685,11 +685,12 @@ See `e2ansi-terminal-fg-and-bg-color-numbers'."
 (defun e2ansi-terminal-number-of-colors ()
   "Estimate the number of colors a terminal supports.
 
-Return the number of colors, or t if the terminal supports full
-24-bit colors."
+Return the number of colors, t if the terminal supports full
+24-bit colors, or nil if the terminal is monochrome."
   (let ((term (getenv "TERM")))
     (if term
-        (cond ((string-equal "truecolor" (getenv "COLORTERM")) t)
+        (cond ((string-equal "dumb" term) nil)
+              ((string-equal "truecolor" (getenv "COLORTERM")) t)
               ((string-match "-256color\\'" term) 256)
               ;; Full RGB support.
               ((string-match "-direct\\'" term) t)
@@ -702,7 +703,8 @@ Return the number of colors, or t if the terminal supports full
   (setq face-explorer-number-of-colors
         (e2ansi-terminal-number-of-colors))
   (setq face-explorer-window-system-type 'tty)
-  (setq face-explorer-color-class 'color)
+  (setq face-explorer-color-class
+        (if face-explorer-number-of-colors 'color 'mono))
   (setq face-explorer-background-mode
         (e2ansi-terminal-background-mode))
   (setq face-explorer-match-supports-function
@@ -1050,12 +1052,12 @@ The lower the value, the better."
 NUMBER is less than `face-explorer-number-of-colors' (unless the
 latter is t).  GROUND-MODE is either :foreground or :background."
   (cond ((or (eq face-explorer-number-of-colors t)
-             (>= face-explorer-number-of-colors 256))
+             (>= (or face-explorer-number-of-colors 0) 256))
          ;; The color number of the basic 16 colors vary between
          ;; terminals, so they are not included when trying to find
          ;; the best matched color.
          (>= number 16))
-        ((> face-explorer-number-of-colors 8)
+        ((> (or face-explorer-number-of-colors 0) 8)
          ;; In ANSI, 16 bit color mode provides 16 foreground colors
          ;; but only 8 backaground colors.
          (or (eq ground-mode :foreground)
@@ -1073,7 +1075,7 @@ If `face-explorer-number-of-colors' is at least 256, exclude the
 basic 16 ANSI colors as their color values are not well defined.
 GROUND-MODE is either :foreground or :background."
   (let* ((number-of-colors (if (or (eq face-explorer-number-of-colors t)
-                                   (> face-explorer-number-of-colors 256))
+                                   (> (or face-explorer-number-of-colors 0) 256))
                                256
                              face-explorer-number-of-colors))
          (key (list name ground-mode number-of-colors))
@@ -1134,7 +1136,7 @@ is the frame to use."
 GROUND-MODE is either :foreground or :background."
   (and name
        (if (or (eq face-explorer-number-of-colors t)
-               (> face-explorer-number-of-colors 256))
+               (> (or face-explorer-number-of-colors 0) 256))
            (e2ansi-color-values name)
          (let ((pair (assoc name e2ansi-colors)))
            (cond (pair

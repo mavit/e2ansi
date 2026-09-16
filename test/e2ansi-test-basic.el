@@ -230,26 +230,40 @@
 (ert-deftest e2ansi-test-detect-terminal ()
   (let ((process-environment '()))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors 8))
      (should (equal face-explorer-background-mode 'light))))
+  (let ((process-environment '("TERM=dumb")))
+    (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'mono))
+     (should (equal face-explorer-number-of-colors nil))))
   (let ((process-environment '("TERM=xterm-256color")))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors 256))
      (should (equal face-explorer-background-mode 'light))))
   (let ((process-environment '("TERM=xterm-direct")))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors t))
      (should (equal face-explorer-background-mode 'light))))
   (let ((process-environment '("TERM=xterm-256color" "COLORTERM=truecolor")))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors t))
      (should (equal face-explorer-background-mode 'light))))
+  (let ((process-environment '("TERM=dumb" "COLORTERM=truecolor")))
+    (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'mono))
+     (should (equal face-explorer-number-of-colors nil))))
   (let ((process-environment '("COLORFGBG=0;7")))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors 8))
      (should (equal face-explorer-background-mode 'light))))
   (let ((process-environment '("COLORFGBG=7;0")))
     (e2ansi-with-fictitious-display-as-terminal
+     (should (equal face-explorer-color-class 'color))
      (should (equal face-explorer-number-of-colors 8))
      (should (equal face-explorer-background-mode 'dark))))
   nil)
