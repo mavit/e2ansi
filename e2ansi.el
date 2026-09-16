@@ -682,15 +682,18 @@ See `e2ansi-terminal-fg-and-bg-color-numbers'."
       'dark)))
 
 
-(defun e2ansi-terminal-number-of-colors ()
-  "Estimate the number of colors a terminal supports.
+(defun e2ansi-terminal-number-of-colors (&optional term colorterm)
+  "Estimate the number of colors a terminal supports from TERM and COLORTERM.
+
+If the optional arguments are not provided, inspect the environment
+variables of the same names instead.
 
 Return the number of colors, t if the terminal supports full
 24-bit colors, or nil if the terminal is monochrome."
-  (let ((term (getenv "TERM")))
+  (let ((term (or term (getenv "TERM"))))
     (if term
         (cond ((string-equal "dumb" term) nil)
-              ((string-equal "truecolor" (getenv "COLORTERM")) t)
+              ((string-equal "truecolor" (or colorterm (getenv "COLORTERM"))) t)
               ((string-match "-256color\\'" term) 256)
               ;; Full RGB support.
               ((string-match "-direct\\'" term) t)
